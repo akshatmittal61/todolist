@@ -32,6 +32,14 @@ Item.find({}, (err, data) => {
 		console.log(routes);
 	}
 });
+Item.deleteMany({ category: "/delete" }, (err) => {
+	if (err) console.log(err);
+	else
+		console.log({
+			status: 200,
+			message: `Suuccessfully deleted redundant items`,
+		});
+});
 let today = new Date();
 let options = {
 	weekday: "long",
@@ -70,10 +78,6 @@ app.post("/", (req, res) => {
 	itemsToSend = [...itemsToSend, req.body.item];
 	res.redirect("/");
 });
-app.get("/about", (req, res) => {
-	res.render("about");
-});
-
 app.post("/delete", (req, res) => {
 	const checkId = req.body.checked;
 	let itemToDel = {};
@@ -94,6 +98,39 @@ app.post("/delete", (req, res) => {
 		console.log(itemToDel);
 		res.redirect(itemToDel.category);
 	});
+});
+app.get("/about", (req, res) => {
+	res.render("about");
+});
+app.get("/:list", (req, res) => {
+	itemsToSend = [];
+	Item.find({}, (err, data) => {
+		if (err) console.log(err);
+		else {
+			data.forEach((item) => {
+				if (item.category === `/${req.params.list}`)
+					itemsToSend = [...itemsToSend, item];
+			});
+			console.log(itemsToSend);
+			res.render("list", {
+				title: _.capitalize(req.params.list),
+				items: itemsToSend,
+				route: req.params.list,
+				allRoutes: routes,
+			});
+		}
+	});
+});
+app.post("/:list", (req, res) => {
+	console.log(req.body);
+	const itemTitle = req.body.item;
+	const newItem = new Item({
+		title: itemTitle,
+		category: `/${req.params.list}`,
+	});
+	newItem.save();
+	itemsToSend = [...itemsToSend, req.body.item];
+	res.redirect(`/${req.params.list}`);
 });
 
 app.listen(5000, () => {
