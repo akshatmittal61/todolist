@@ -5,17 +5,32 @@
         </h1>
     </div>
     <div class="box">
-        <% for(let i=0;i<items.length;++i){ %>
-            <div class="item">
-                <input type="checkbox">
-                <p>
-                    <%= items[i] %>
-                </p>
-            </div>
-            <% } %>
-                <form action="/" method="post">
-                    <input type="text" name="item" id="item" placeholder="To Do Item" autocomplete="off">
+        <% items.forEach(item=>{ %>
+            <form action="/delete" method="post" style="text-align: left; margin-left: 0;">
+                <div class="item">
+                    <input type="checkbox" onchange="this.form.submit()" name="checked" value="<%= item._id %>">
+                    <p>
+                        <%= item.title %>
+                    </p>
+                </div>
+            </form>
+            <% }) %>
+                <form action=<%=route %> method="post">
+                    <input type="text" name="item" id="item" placeholder="New Item here" autocomplete="off">
                     <button type="submit" name="button" value=<%=title%>>+</button>
                 </form>
+    </div>
+    <div class="all-routes">
+        <div class="all-routes-title">
+            All Lists:
+        </div>
+        <div class="all-routes-body">
+            <% allRoutes.forEach(route=>{ %>
+                <a href="<%= route %>">
+                    <%= route %>
+                </a>
+                <% }) %>
+                <a href="/about">/about</a>
+        </div>
     </div>
     <%- include("footer") -%>
